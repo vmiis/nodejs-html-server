@@ -1,0 +1,422 @@
+<div id=D__ID module=frame>
+    <div system-html>
+        <div top-right-corner id=top_right_corner_0 class='d-none d-xl-block'>
+            <div>
+                <span id=vm_username></span>
+            </div>
+        </div>
+        <div bottom-right-corner style='display:none' id=_sys_dev_toolbar_0>
+            <span id=_sys_dev_toolbar_debug_info></span>
+            , <u id=_sys_dev_toolbar_editor style='cursor:pointer'>edit current module</u>
+            , <u id=_sys_dev_toolbar_code style='cursor:pointer'>source code of current module</u>
+            , <u id=_sys_dev_toolbar_list style='cursor:pointer'>module list</u>
+            , <u id=_sys_dev_toolbar_system style='cursor:pointer'>system structure</u>
+        </div>
+        <div alert class="modal fade" id="vm_alert_information" tabindex="-1" role="dialog" aria-labelledby="vm_dialog" aria-hidden="true" data-backdrop="static">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="ModalLabel">Information</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $vm._start_frame=function(){
+            //------------------------------------
+            //if($vm.debug!=undefined) $('#_sys_dev_toolbar_0').show();
+            //------------------------------------
+            $('#_sys_dev_toolbar_editor').on('click',function(){
+                if($vm.active_name!=undefined){
+                    var url=$vm.module_list[$vm.active_name].url;
+                    $.get(url,function(txt){
+                        $vm.load_module('module-editor','',{code:txt,url:url,module_name:$vm.active_name})
+                    },'text');
+                }
+            })
+            //------------------------------------
+            $('#_sys_dev_toolbar_system').on('click',function(){
+                var txt="<body>\r\n";
+                    txt+="\t<header>\r\n";
+                    $('#header >div').each(function(){
+                        var a=$(this).attr('id');
+                        var m=$(this).attr('module');
+                        var c="url:"+"@1span class=c1@2"+$vm.module_list[m].url+"@1/span@2";
+                        var tb=$vm.module_list[m].Table;
+                        if(tb!=undefined) c=c+", table:"+"@1span class=c2@2"+tb+"@1/span@2";
+                        txt+="\t\t<div id="+a+" module=@1span class=c@2"+m+"@1/span@2>"+c+"</div>\r\n";
+                    })
+                    txt+="\t</header>\r\n";
+                    txt+="\t<content>\r\n";
+                        $('#content >div').each(function(){
+                        var a=$(this).attr('id');
+                        var m=$(this).attr('module');
+                        var c="url:"+"@1span class=c1@2"+$vm.module_list[m].url+"@1/span@2";
+                        var tb=$vm.module_list[m].Table;
+                        if(tb!=undefined) c=c+", table:"+"@1span class=c2@2"+tb+"@1/span@2";
+                        txt+="\t\t<div id="+a+" module=@1span class=c@2"+m+"@1/span@2>"+c+"</div>\r\n";
+                    })
+                    txt+="\t</content>\r\n";
+                    txt+="\t<footer>\r\n";
+                        $('#footer >div').each(function(){
+                        var a=$(this).attr('id');
+                        var m=$(this).attr('module');
+                        var c="url:"+"@1span class=c1@2"+$vm.module_list[m].url+"@1/span@2";
+                        var tb=$vm.module_list[m].Table;
+                        if(tb!=undefined) c=c+", table:"+"@1span class=c2@2"+tb+"@1/span@2";
+                        txt+="\t\t<div id="+a+" module=@1span class=c@2"+m+"@1/span@2>"+c+"</div>\r\n";
+                    })
+                    txt+="\t</footer>\r\n";
+                    txt+="\t<system>\r\n";
+                        $('#system >div').each(function(){
+                        var a=$(this).attr('id');
+                        var m=$(this).attr('module');
+                        var c="url:"+"@1span class=c1@2"+$vm.module_list[m].url+"@1/span@2";
+                        var tb=$vm.module_list[m].Table;
+                        if(tb!=undefined) c=c+", table:"+"@1span class=c2@2"+tb+"@1/span@2";
+                        txt+="\t\t<div id="+a+" module=@1span class=c@2"+m+"@1/span@2>"+c+"</div>\r\n";
+                    })
+                    txt+="\t</system>\r\n";
+                    txt+="</body>\r\n";
+                    txt=txt.replace(/</g,'&lt;');
+                    txt=txt.replace(/>/g,'&gt;');
+                    txt=txt.replace(/@1/g,'<');
+                    txt=txt.replace(/@2/g,'>');
+                var win=window.open("","Systsm Infomation");
+                win.document.body.innerHTML="<pre>"+txt+"</pre><title>System Infomation</title><style> .c{color:red;} .c1{color:blue;} .c2{color:green;} body{ font-family:Courier New;font-size:12px; white-space: nowrap; } </style>";
+            })
+            //------------------------------------
+            $('#_sys_dev_toolbar_code').on('click',function(){
+                if($vm.active_name!=undefined){
+                    var url=$vm.module_list[$vm.active_name].url;
+                    $.get(url,function(txt){
+                        txt=txt.replace(/</g,'&lt;');
+                        txt=txt.replace(/>/g,'&gt;');
+                        var win=window.open("","Sources Code");
+                        win.document.body.innerHTML=url+"<br><br><pre>"+txt+"</pre><title>Source Code</title><style> body{ font-family:Courier New;font-size:12px; white-space: nowrap; } </style>";
+                    },'text');
+                }
+            })
+            //------------------------------------
+            $('#_sys_dev_toolbar_list').on('click',function(){
+                var txt="";
+                var s=[];
+                for(a in $vm.module_list){
+                    if(a!='module-editor'){
+                        var L=a.length;
+                        var tt="";
+                        for(k=0;k<50-L;k++) tt+="&nbsp;"; 
+                        s.push(a+tt+JSON.stringify($vm.module_list[a]));
+                    }
+                }
+                s.sort();
+                for(i in s){
+                    txt+=s[i]+"<br>";
+                }
+                var win=window.open("","Module list");
+                win.document.body.innerHTML=txt+"<title>Module List</title><style> body{ font-family:Courier New;font-size:12px; white-space: nowrap; } </style>";
+            })
+            //------------------------------------
+
+            console.log("start_frame  "+(new Date().getTime()-$vm.start_time)+'ms');
+            //------------------------------------------
+            var data=''; for(var key in window.localStorage){ if(window.localStorage.hasOwnProperty(key)){ data+=window.localStorage[key]; }}
+            if(data.length>3000000) localStorage.clear();
+            //------------------------------------------
+            $vm.version=$vm.ver[0]; $vm.reload='';
+            $vm.hosting_path=window.location.href.substring(0, window.location.href.split('?')[0].lastIndexOf('/'));
+            $vm.debug_message=true; //show debug message in console
+            //------------------------------------------
+            $vm.show_user=function(){
+            	var third=""
+            	//if($vm.user_puid=="1") third=" (Google)";
+            	//if($vm.user_puid=="2") third=" (Facebook)";
+            	if($vm.user_name=='guest'){
+            		$('#vm_username').text('');
+            		$('#vm_signin').removeClass('vm-hide');
+            		$('#vm_signout').addClass('vm-hide');
+            	}
+            	else{
+            		$('#vm_username').text('Signed in as '+ $vm.user_name+third);
+                    $('#vm_signin').addClass('vm-hide');
+            		$('#vm_signout').removeClass('vm-hide');
+            	}
+            }
+            //---------------------------------------------
+            window.onmessage=function(e){
+                if(e.data.username!=undefined && e.data.token!=undefined){
+                    $vm.user_name=e.data.username;
+                    $vm.set_token(e.data.token,e.data.username);
+                    location.reload(true);
+                }
+            };
+            //------------------------------------
+            $vm.load_resources=function(links){
+                for(i in links){
+                    var e=links[i].split('.').pop();
+                    if(e=='css'){
+                        $('head').append("<link rel='stylesheet' href='"+links[i]+"'>");
+                    }
+                    else if(e=='js'){
+                        $vm.load_js_link(links[i])
+                    }
+                }
+                //-------------------------------------
+                /*?
+                $vm.module_list['_system_export_dialog_module']={table_id:'',url:'__COMPONENT__/dialog/export_dialog_module.html',"name_for_search":""};
+                $vm.module_list['_system_import_dialog_module']={table_id:'',url:'__COMPONENT__/dialog/import_dialog_module.html',"name_for_search":""};
+                $vm.module_list['uploading_file_dialog_module']={table_id:'',url:'__COMPONENT__/dialog/uploading_file_dialog_module.html',"name_for_search":""};
+                $vm.load_module_v2('_system_export_dialog_module','hidden',{})
+                $vm.load_module_v2('_system_import_dialog_module','hidden',{})
+                $vm.load_module_v2('uploading_file_dialog_module','hidden',{})
+                */
+                //-------------------------------------
+            }
+            //------------------------------------
+            if($vm.resources==undefined){
+                $vm.resources=[
+                    "https://use.fontawesome.com/releases/v5.3.1/css/all.css",
+                    "https://use.fontawesome.com/releases/v5.3.1/css/v4-shims.css",
+                    "https://ajax.aspnetcdn.com/ajax/jquery.ui/1.12.1/themes/redmond/jquery-ui.css",
+                    "https://ajax.aspnetcdn.com/ajax/jquery.ui/1.12.1/jquery-ui.min.js",
+                    "https://maxcdn.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js",
+                    "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js",
+                    "https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.0/jspdf.min.js",
+                    //"https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.js",
+                    /*?
+                    //"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css",
+                    */
+                    //"https://cdnjs.cloudflare.com/ajax/libs/react/16.4.1/umd/react.production.min.js",
+                    //"https://cdnjs.cloudflare.com/ajax/libs/react-dom/16.4.1/umd/react-dom.production.min.js",
+                    //"https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.5/angular.min.js",
+                    "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js",
+                    
+                    //"https://surveyjs.azureedge.net/1.0.73/survey.jquery.min.js",
+                    //"https://unpkg.com/formiojs@latest/dist/formio.full.min.css",
+                    //"https://unpkg.com/formiojs@latest/dist/formio.full.min.js",
+                    //"https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.4/ace.js",
+                    /*
+                    "https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js",
+                    "https://apis.google.com/js/plusone.js",
+                    "https://ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.min.js",
+                    "https://sdk.amazonaws.com/js/aws-sdk-2.1.34.min.js",
+                    */
+                    "https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.9.0/css/lightbox.min.css",
+                    "https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.9.0/js/lightbox.min.js",
+                    "https://www.gstatic.com/charts/loader.js"
+                ];
+            }
+            //---------------------------------------------
+            setTimeout(function (){ $.ajaxSetup({cache:true}); $vm.load_resources($vm.resources); },10);
+            //------------------------------------
+            $vm.load_js_link=function(link){
+                $.getScript(link,function(){
+                    var nm=link.split('/').pop();
+                    nm=nm.replace(/\./g,'-');
+                    $vm[nm]=1;
+                    if(nm=='loader-js'){
+                        google.charts.load('current', {packages: ['corechart']});
+                    }
+                });
+            }
+            //------------------------------------
+            $vm.alert=function(msg){
+              $('#vm_alert_information div.modal-body').html( msg );
+              $("#vm_alert_information").modal();
+            }
+            //------------------------------------
+            $vm.close_alert=function(){
+              $('#vm_alert_information').modal('hide');
+            }
+            //------------------------------------
+            $vm.app_module=1;
+            //------------------------------------
+            if(sessionStorage["signinout"]==1){
+                sessionStorage["signinout"]=0;
+                $vm.load_module("home",'',{});
+            }
+            else{
+                var a=window.location.href.split('?/');
+                if(a.length==1){
+                    $vm.load_module("home",'',{});
+                    console.log("home module(1)  "+(new Date().getTime()-$vm.start_time)+'ms');
+                    $('#_sys_dev_toolbar_debug_info').text("loading home page time:"+(new Date().getTime()-$vm.start_time).toString()+"ms")
+                }
+                else if(a.length==2){
+                    $vm.search_module=a[1].split('&')[0].replace(/\//g,'_');
+                    $vm.search_module=a[1].split('&')[0].replace(/\//g,'_');
+                    if($vm.search_module=='home'){
+                        $vm.load_module("home",'',{});
+                        console.log("home module(2) "+(new Date().getTime()-$vm.start_time)+'ms');
+                        $('#_sys_dev_toolbar_debug_info').text("loading home page time:"+(new Date().getTime()-$vm.start_time).toString()+"ms")
+                    }
+                    else{
+                        //-------------------------------------
+                        var I=0;
+                        var loop=setInterval(function (){
+                            if($vm.module_list[$vm.search_module]!=undefined){
+                                clearInterval(loop);
+
+                                if($vm.module_list[$vm.search_module].app==undefined)  $vm.load_module($vm.search_module,'',{});
+                                else location.replace($vm.module_list[$vm.search_module].url);
+                                
+                                console.log($vm.search_module+"  "+(new Date().getTime()-$vm.start_time)+'ms');
+                                $('#_sys_dev_toolbar_debug_info').text("loading the start page time:"+(new Date().getTime()-$vm.start_time).toString()+"ms")
+                            }
+                            I++; if(I>50){
+                                clearInterval(loop); alert($vm.search_module+" is not installed.");
+                            }
+                        },10);
+                        //-------------------------------------
+                    }
+                }
+            }
+            //------------------------------------
+        }
+        //------------------------------------
+        $vm.url=function(text){
+            text=text.replace(/__HOST__\//g,$vm.hosting_path+'/');
+            text=text.replace(/__VER__/g,$vm.ver[0]);
+            text=text.replace(/__COMPONENT__\//g,'https://vm.vmiis.com/component/');
+            if(window.location.toString().indexOf('_d=1')!=-1){
+                var host=window.location.protocol+'//'+window.location.host;
+                text=text.replace(/https:\/\/vm.vmiis.com/g,host+'/vmiis/vm');
+            }
+            return text;
+        }
+        //---------------------------------------------
+        $vm._start=function(){
+            //---------------------------------------------
+            var url=$vm.url("https://vm.vmiis.com/distribution/vm.js");
+            //---------------------------------------------
+            var apppath=window.location.href.substring(0, window.location.href.lastIndexOf('/')).split('\/?')[0];
+            var ver=localStorage.getItem(apppath+url+"ver");
+            var txt=localStorage.getItem(apppath+url+"txt");
+            if(ver!=$vm.ver[1] || txt==null || window.location.toString().indexOf('_d=1')!=-1){
+                $.get(url+'?_='+new Date().getTime(),function(new_txt){
+                    localStorage.setItem(apppath+url+"txt",new_txt);
+                    localStorage.setItem(apppath+url+"ver",$vm.ver[1]);
+                    console.log('loading from url. '+url+' '+ver+'/'+$vm.ver[1]);
+                    $('head').append('<scr'+'ipt>'+new_txt+'</scr'+'ipt>');
+                    console.log('vm is ready');
+                    $vm._start_frame();
+                    $vm.start();
+                },'text');
+            }
+            else{
+                console.log('loading from storage. '+url+' '+ver+'/'+$vm.ver[1]);
+                $('head').append('<scr'+'ipt>'+txt+'</scr'+'ipt>');
+                console.log('vm is ready');
+                $vm._start_frame();
+                $vm.start();
+            }
+            //---------------------------------------------
+        }
+    </script>
+    <style>
+        /*top right*/
+        #top_right_corner_0{
+            display:block;
+            position:fixed;
+            top:3px;
+            right:3px;
+            font-size:11px;
+            line-height:13px;
+            color:#fff;
+            z-index: 99999;
+        }
+        #_sys_dev_toolbar_0{
+            display:block;
+            position:fixed;
+            bottom:3px;
+            right:3px;
+            font-size:11px;
+            line-height:13px;
+            z-index: 99999;
+
+            background-color: #333;
+            padding: 3px 10px;
+            border-radius: 3px;
+            color: #fff;            
+        }
+        #vm_username{
+            float:right;
+        }
+        /*-------------------------------------------------------*/
+        .loader_0 {
+          height: 4px;
+          width: 100%;
+          position: relative;
+          overflow: hidden;
+          background-color: #ddd;
+        }
+        .loader_0:before{
+          display: block;
+          position: absolute;
+          content: "";
+          left: -200px;
+          width: 200px;
+          height: 4px;
+          background-color: #2980b9;
+          animation: loading 2s linear infinite;
+        }
+        /*animation*/
+        @keyframes loading {
+            from {left: -200px; width: 30%;}
+            50% {width: 30%;}
+            70% {width: 70%;}
+            80% { left: 50%;}
+            95% {left: 120%;}
+            to {left: 100%;}
+        }
+        @keyframes vm_menu_show {
+            from {max-height: 0px;}
+            to {max-height: 1000px;}
+        }
+        /*----------------------*/
+        @media screen and (max-width: 900px){
+            #FL_0{
+                display:none;
+            }
+        }
+        /*----------------------*/
+    	@keyframes vm_module_fadein {
+    		from { opacity:0; }
+    		to {opacity:1;}
+    	}
+        @keyframes vm_module_slide_in {
+    		from { margin-top:50%; }
+    		to {margin-top:0;}
+    	}
+        @keyframes vm_module_slide_out {
+            from { margin-top:0; }
+    		to {margin-top:-50%;}
+    	}
+        @media print {
+            html,body{
+                width:100%;
+                height:100%;
+                overflow:visible;
+            }
+            body * {
+                visibility: hidden;
+            }
+            #content_container_0, #content_container_0 *{
+                visibility: visible;
+            }
+            #content, #content *{
+                visibility: visible;
+            }
+        }
+    </style>
+</div>

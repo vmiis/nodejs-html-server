@@ -1,0 +1,145 @@
+<div id=D__ID>
+    <div>
+        <div id=toolbar__ID class="navbar navbar-default">
+            <form class="form-inline">
+                <!--<button id=load__ID type=button class="btn btn-secondary" title='Load'>Load Code</button>-->
+                Path:&nbsp <input id=path__ID type=textpassword title='Path' style='width:390px'  />&nbsp
+                <button id=load__ID type=button class="btn btn-secondary" title='Load'>Load</button>
+                Password for saving:&nbsp <input id=password__ID type=password title='Password' style='width:90px' />&nbsp
+                <button id=save__ID type=button class="btn btn-secondary" title='Save'>Save</button>
+                <button id=run__ID type=button class="btn btn-secondary" title='Download'>Run</button>
+            </form>
+        </div>
+        <div class="grid-container__ID">
+            <div class="item1__ID" id=editor__ID></div>
+            <div class="item2__ID" id=dragbar__ID></div>
+            <div class="item3__ID" id=module__ID></div>
+        </div>
+    </div>
+    <script>
+        function F__ID(){
+            var editor=null;
+            var file_url="";
+            var module_name="";
+            //--------------------------------------------------------
+            $('#D__ID').on('load',function(){
+                url="";
+                module_name="";
+                if(editor==null){
+                    set_editor();
+                }
+                var aa=window.location.href.split('?path=');
+                if(aa.length=2){
+                    var path=aa[1];
+                    $('#path__ID').val(path);
+                    $('#load__ID').triggerHandler('click');
+                }
+            })
+            //--------------------------------------------------------
+            $vm.module_list["__MODULE__"].show=function(){
+                document.title="Editor | "+$vm.default_title;
+                $("meta[name='description']").attr("content","Editor");
+            }
+            //--------------------------------------------------------
+            var set_editor=function(){
+                editor=ace.edit("editor__ID");
+                editor.setTheme("ace/theme/twilight");
+                editor.getSession().setMode("ace/mode/html");
+                editor.getSession().setUseWorker(false);
+                editor.setOption("showPrintMargin", false)
+                $("#editor__ID").css('height',($vm.min_height-50)+"px");
+            }
+            //--------------------------------------------------------
+            var ready1=function(){
+                set_editor();
+                var apppath=window.location.href.substring(0, window.location.href.lastIndexOf('/')).split('\/?')[0];
+		        var txt=localStorage.getItem(apppath+"_module_test_"+"_txt");
+
+                if(txt!=null){
+                    editor.setValue(txt);
+                }
+            }
+            //--------------------------------------------------------
+            ready1();
+            //--------------------------------------------------------
+            $('#run__ID').on('click',function(){
+                var nm="_module_test_"
+                $vm.module_list[nm]={url:file_url}
+                var code=editor.getValue();
+                $('#module__ID').html('');
+                var flag=code.substring(0,13);
+                if(flag!=('<div id=D__'+'ID')){
+                    $vm.alert("The HTML contents is not a module");
+                    return;
+                }
+                $vm.load_content(nm,'module__ID',{},code);
+                $('#module__ID').find('div:first').css('min-height',$vm.min_height+"px");
+            })
+            //--------------------------------------------------------
+            $('#save__ID').on('click',function(){
+                var endpoint=window.location.protocol+"//"+window.location.hostname+":"+window.location.port;
+                var full_path=$('#path__ID').val();
+                var last_path=full_path.replace(endpoint+"/",'').replace(endpoint+"\\",'').replace('sites/','').replace('sites\\','');
+
+                var d={cmd:'save',"path":last_path,"content":editor.getValue(),password:$('#password__ID').val()}
+                var da=JSON.stringify(d);
+                var xmlHttp = new XMLHttpRequest();
+                xmlHttp.onreadystatechange = function () {
+                    console.log(this.readyState+" "+this.status);
+                    if (this.readyState == 4 && this.status == 200){
+                        $vm.alert(this.responseText);
+                    }
+                }
+                xmlHttp.open("POST", endpoint, true);
+                xmlHttp.send(da);
+            })
+            //--------------------------------------------------------
+            $('#load__ID').on('click',function(){
+                var path=$('#path__ID').val();
+                $.get(path+'?_='+new Date().getTime(),function(txt){  
+                    editor.setValue(txt);
+                },'text');
+
+            })
+            //--------------------------------------------------------
+            $('#dragbar__ID').mousedown(function(e){
+                e.preventDefault();
+                $(document).mousemove(function(e){
+                    $('#editor__ID').css("width",e.pageX-3);
+                })
+            });
+            $(document).mouseup(function(e){
+                $(document).unbind('mousemove');
+            });
+            //--------------------------------------------------------
+        }
+    </script>
+    <style>
+        #D__ID{
+            background-color:#fff;
+            animation: vm_module_fadein 1.0s;
+        }
+        #toolbar__ID{
+            background-color:#aaa;
+            padding:5px 10px;
+            margin-bottom:0px;
+            overflow:hidden
+        }
+        #toolbar__ID button{
+            margin-right:8px; 
+        }
+        .item1__ID { grid-area: left; width:500px;}
+        .item2__ID { grid-area: d; width:5px}
+        .item3__ID { grid-area: right; }
+
+        .grid-container__ID {
+            display: grid;
+            grid-template-columns: auto auto 1fr;
+            grid-template-areas:'left d right';
+        }
+        #dragbar__ID{
+            background-color: #aaa;
+            cursor: col-resize;
+        }
+    </style>
+</div>

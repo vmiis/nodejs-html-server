@@ -1,0 +1,54 @@
+<div id=D__ID>
+    <section id=form_container__ID>
+    	<div id=header__ID>
+    		Form
+    	</div>
+    	<form id=F__ID>
+    		<div class="container">
+                <hr class=hr__ID>
+    			<div class="row row__ID">
+    				<div class=col-md-4>
+    					<span>Name</span>
+    				</div>
+    				<div class=col-md-8>
+    					<input type="text" name=Name class=form-control />
+    				</div>
+    			</div>
+                <hr class=hr__ID>
+    			<div class="row row__ID">
+    				<div class=col-md-4>
+    					<span>Color</span>
+    				</div>
+    				<div class=col-md-8>
+    					<input type="color" name=Color style='width:30px;' />
+    				</div>
+    			</div>
+				<hr class=hr__ID>
+    			<br>
+    			<div class="row">
+    				<div class=col>
+    					<button id=submit__ID type="submit" class="btn btn-secondary">Submit</button>
+    				</div>
+    			</div>
+    		</div>
+    	</form>
+    </section>
+    <script>
+    	function F__ID(){
+    		//-------------------------------------
+            VmInclude:__COMPONENT__/f/form.01.js
+    		//-------------------------------------
+			var old_load=m.load;
+    	}
+    </script>
+    <style>
+        VmInclude:__COMPONENT__/f/form.01.css
+        #form_container__ID{
+            max-width:600px;
+        }
+        .hr__ID{
+            margin:6px 0;
+            padding:0;
+        }
+    </style>
+</div>

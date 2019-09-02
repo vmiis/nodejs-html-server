@@ -1,0 +1,163 @@
+<div id=D__ID>
+    <div>
+        <div id=toolbar__ID class="navbar navbar-default">
+            <form class="form-inline">
+                <!--<button id=load__ID type=button class="btn btn-secondary" title='Load'>Load Code</button>-->
+                Site path:&nbsp <input id=path__ID type=textpassword title='Path' style='width:320px'  />&nbsp
+                <button id=load__ID type=button class="btn btn-secondary" title='Load'>Load</button>
+            </form>
+        </div>
+        <div id=tree__ID>
+        </div>
+        <div id=mlist__ID>
+        </div>
+        <div id=nodejs style='padding:50px;font-size:11px'>
+            Some parts only work under nodejs server.<br>
+            <a target=_blank style='color:#000' href="https://github.com/vmiis/projects/blob/master/README.md">Click here to see how to run the labs on a local computer under node.js server</a><br>
+            </script>
+        </div>
+    </div>
+    <script>
+        function F__ID(){
+            var editor=null;
+            var file_url="";
+            var module_name="";
+            //--------------------------------------------------------
+            $('#D__ID').on('load',function(){
+                //$('#path__ID').val("labs\\002");
+                var aa=window.location.href.split('?path=');
+                if(aa.length=2){
+                    $('#path__ID').val(aa[1]);
+                    $('#load__ID').triggerHandler('click');
+                    show_module_list(aa[1]);
+                }
+            })
+            var show_module_list=function(path){
+                var mL=localStorage.getItem("__temp1001_"+path);
+                if(mL!=null && mL!=undefined){
+                    var jmL=JSON.parse(mL)
+                    var txt="Module list<br>";
+                    var s=[];
+                    for(a in jmL){
+                        s.push("<a href="+jmL[a].url+">"+a+"</a>: "+JSON.stringify(jmL[a]));
+                    }
+                    s.sort();
+                    for(i in s){
+                        txt+="&nbsp;&nbsp;&nbsp;"+s[i]+"<br>";
+                    }
+                    $('#mlist__ID').html(txt)
+                    $('#mlist__ID a').on('click',function(e){
+                        e.preventDefault();
+                        var href=$(this).attr("href");
+                        window.open("../editor/index.html?path="+href);
+                    });
+                }
+            }
+            //--------------------------------------------------------
+            var get_space=function(N){
+                var txt="";
+                for(var i=0;i<N;i++){
+                    txt+="&nbsp;&nbsp;&nbsp;&nbsp;";
+                }
+                return txt;
+            }
+            //--------------------------------------------------------
+            var get_tree=function(I,tree){
+                var endpoint=window.location.protocol+"//"+window.location.hostname+":"+window.location.port;
+                var full_path=$('#path__ID').val();
+                var last_path=full_path.replace(endpoint,'').replace('/sites','').replace('\\sites','');
+                var first_path=full_path.replace(last_path,'');
+                var txt="";
+                txt+=get_space(I)+tree.name+"<br>";
+                for(i in tree.children){
+                    if(tree.children[i].type=="directory"){
+                        txt+=get_tree(I+1,tree.children[i])
+                    }
+                    else txt+=get_space(I+1)+"<a href="+first_path+"/"+tree.children[i].path+">"+tree.children[i].name+"</a>"+"<br>";
+                }
+                return txt;
+            }
+            //--------------------------------------------------------
+            var display_tree=function(tree){
+                var txt="Directory tree<br>";//<pre><code>";
+                txt+=get_tree(1,tree);
+                txt+="";//</code></pre>";
+                $('#tree__ID').html(txt);
+                $('#tree__ID a').on('click',function(e){
+                    e.preventDefault();
+                    var href=$(this).attr("href");
+                    window.open("../editor/index.html?path="+href);
+                });
+            }
+            //--------------------------------------------------------
+            $('#load__ID').on('click',function(){
+                var endpoint=window.location.protocol+"//"+window.location.hostname+":"+window.location.port;
+                var path=$('#path__ID').val();
+                if(path==""){
+                    $vm.alert("No file path.");
+                    return;
+                }
+                var path2=path.replace(endpoint,'').replace('/sites','').replace('\\sites','');
+                var d={cmd:'tree',"path":path2}
+                var da=JSON.stringify(d);
+                var xmlHttp = new XMLHttpRequest();
+                xmlHttp.onreadystatechange = function () {
+                    console.log(this.readyState+" "+this.status);
+                    if (this.readyState == 4 && this.status == 200){
+                        if(this.responseText!="") display_tree(JSON.parse(this.responseText));
+                    }
+                    $('#nodejs').hide
+                }
+                xmlHttp.open("POST", endpoint, true);
+                xmlHttp.send(da);
+            })
+            //--------------------------------------------------------
+        }
+    </script>
+    <style>
+        #D__ID{
+            background-color:#fff;
+            animation: vm_module_fadein 1.0s;
+        }
+        #toolbar__ID{
+            background-color:#aaa;
+            padding:5px 10px;
+            margin-bottom:0px;
+            overflow:hidden
+        }
+        #toolbar__ID button{
+            margin-right:8px; 
+        }
+        #tree__ID{
+            padding:20px;
+        }
+        #tree__ID a:link {
+            color:#555;
+        }
+        #tree__ID a:visited {
+            color:#555;
+        }
+        #tree__ID a:hover {
+            color:red;
+        }
+        #tree__ID a:active {
+            color:#555;
+        }
+        
+        #mlist__ID{
+            padding:20px;
+        }
+        #mlist__ID a:link {
+            color:#555;
+        }
+        #mlist__ID a:visited {
+            color:#555;
+        }
+        #mlist__ID a:hover {
+            color:red;
+        }
+        #mlist__ID a:active {
+            color:#555;
+        }
+    </style>
+</div>

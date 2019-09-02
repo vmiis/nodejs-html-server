@@ -1,0 +1,25 @@
+<section>
+    VmInclude:__COMPONENT__/g/grid.01.html
+</section>
+<script>
+    function F__ID(){
+        //-------------------------------------
+        VmInclude:__COMPONENT__/g/grid.01.js
+        //-------------------------------------
+        var fields="Name,Color";
+        m.fields="_Form,"+fields+",Submit_date,Submitted_by,_Delete";
+        //-------------------------------------
+        m.cell_render=function(records,I,field,td){
+            switch(field){
+                case 'Color':
+                    var h="<div style='height:20px; width:32px; background-color:"+records[I].Data[field]+"'></div>"
+                    td.html(h);
+                    break;
+            }
+        }
+        //-------------------------------------
+    }
+</script>
+<style>
+    VmInclude:__COMPONENT__/g/grid.01.css
+</style>

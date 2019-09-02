@@ -1,0 +1,64 @@
+<div id=D__ID module=app>
+    <!-- special font, css etc for this app -->
+    <link rel="stylesheet" href='https://fonts.googleapis.com/css?family=Nunito|Nunito+Sans|Roboto+Slab' />
+    <!-------->
+    <script main-code>
+        //------------------------------------
+        $vm.api_address="https://api.wappsystem.com";
+        if(window.location.toString().indexOf('_p=1')!=-1) $vm.api_address="https://api.wappsystem.com:3000";
+        //------------------------------------
+        $vm.default_title="Modular distributed web application";
+        //------------------------------------
+        var ready1=function(){
+            var set_layout=function(){
+                $vm.min_height=$(window).height()-$('#_header').outerHeight();
+                $('#content').css('min-height',$vm.min_height);
+                $('#content').css('padding-top',$('#_header').outerHeight());
+            }
+            //------------------------------------
+            set_layout();
+            $vm.load_module('editor','',{})
+            //-----------------------------------------
+            $vm.show=function(m_name){
+                var nm="";
+                var ns=window.location.href.split('?/');
+                if(ns.length>1) nm=ns[1].split('&')[0].replace('-data','').replace(/-/g,' ');
+                document.title=$vm.default_title;
+                if(nm!=""){
+                    var name=nm.charAt(0).toUpperCase() + nm.slice(1)
+                    document.title=name+" | "+$vm.default_title;
+                }
+                $("meta[name='description']").attr("content", "A single page application with shared reusable modules distributed on different static web servers around the world and maintained by different people with different skills!");
+                $("body").removeClass();
+                $("body").addClass('body_background_default');
+                $vm.active_id=undefined;
+                $vm.active_name=undefined;
+                if(m_name!=undefined){ $vm.active_id=$vm.module_list[m_name].id; $vm.active_name=m_name; }
+                if(m_name!=undefined && $vm.module_list[m_name].show!=undefined) $vm.module_list[m_name].show();
+                if($vm.active_id!=undefined){
+                    $('#D'+$vm.active_id).css('height','unset');
+                    $('#D'+$vm.active_id).css('min-height',$vm.min_height+"px");
+                    $('#D'+$vm.active_id).css('overflow','unset');
+                    $('#D'+$vm.active_id).css('overflow-x','auto');
+                }
+            }
+            //------------------------------------
+            window.onresize=function(){set_layout();}
+            //------------------------------------
+            $vm.init(function(){
+                $vm.init_status=1;
+                $vm.show_user();
+            })
+            //------------------------------------
+            if($vm.first_module!=undefined) $vm.show($vm.first_module);
+            //------------------------------------
+        }
+        //-------------------------------------
+        ready1();
+        //-------------------------------------
+    </script>
+    <style main-style>
+        html,body{ margin:0; padding:0; height:100%; font-family:Arial;}
+        body{background-size: cover; background-repeat: repeat-x; background-position: center top; background-attachment: fixed;}
+    </style>
+</div>
