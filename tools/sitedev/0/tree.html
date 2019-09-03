@@ -3,7 +3,7 @@
         <div id=toolbar__ID class="navbar navbar-default">
             <form class="form-inline">
                 <!--<button id=load__ID type=button class="btn btn-secondary" title='Load'>Load Code</button>-->
-                Site path:&nbsp <input id=path__ID type=textpassword title='Path' style='width:320px'  />&nbsp
+                Site path:&nbsp <input id=path__ID type=textpassword title='Path' style='width:500px'  />&nbsp
                 <button id=load__ID type=button class="btn btn-secondary" title='Load'>Load</button>
             </form>
         </div>
@@ -64,16 +64,13 @@
             //--------------------------------------------------------
             var get_tree=function(I,tree){
                 var endpoint=window.location.protocol+"//"+window.location.hostname+":"+window.location.port;
-                var full_path=$('#path__ID').val();
-                var last_path=full_path.replace(endpoint,'').replace('/sites','').replace('\\sites','');
-                var first_path=full_path.replace(last_path,'');
                 var txt="";
                 txt+=get_space(I)+tree.name+"<br>";
                 for(i in tree.children){
                     if(tree.children[i].type=="directory"){
                         txt+=get_tree(I+1,tree.children[i])
                     }
-                    else txt+=get_space(I+1)+"<a href="+first_path+"/"+tree.children[i].path+">"+tree.children[i].name+"</a>"+"<br>";
+                    else txt+=get_space(I+1)+"<a href="+endpoint+"/"+tree.children[i].path.replace(/\\/g,'\/')+">"+tree.children[i].name+"</a>"+"<br>";
                 }
                 return txt;
             }
@@ -81,7 +78,6 @@
             var display_tree=function(tree){
                 var txt="Directory tree<br>";//<pre><code>";
                 txt+=get_tree(1,tree);
-                txt+="";//</code></pre>";
                 $('#tree__ID').html(txt);
                 $('#tree__ID a').on('click',function(e){
                     e.preventDefault();
@@ -97,8 +93,7 @@
                     $vm.alert("No file path.");
                     return;
                 }
-                var path2=path.replace(endpoint,'').replace('/sites','').replace('\\sites','');
-                var d={cmd:'tree',"path":path2}
+                var d={cmd:'tree',"path":path.replace(endpoint,'')}
                 var da=JSON.stringify(d);
                 var xmlHttp = new XMLHttpRequest();
                 xmlHttp.onreadystatechange = function () {

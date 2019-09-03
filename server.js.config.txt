@@ -1,4 +1,4 @@
 {
 	"port":8000,
-	"static":"GitHub"
+	"static":"please specify your contents folder"
 }
