@@ -1,4 +1,4 @@
 {
 	"port":8000,
-	"static":"please specify your contents folder"
+	"static":"please specify your contents folder, for examples, c:\folder\subfolder"
 }

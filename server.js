@@ -83,10 +83,12 @@ fs.readFile("server.js.password.txt", 'utf8', function(err, txt){
 })
 //---------------------------------------------------
 fs.readFile("server.js.config.txt", 'utf8', function(err, txt){
+	txt=txt.replace(/\\/g,'\\\\');
 	var c=JSON.parse(txt);
 	var port=c.port;
 	content_path=c.static;
-	server.use(express.static(c.static));
+	if(content_path=="") content_path=__dirname.replace("\\server","\\sites");
+	server.use(express.static(content_path));
 	server.use(express.static(__dirname+"\\tools"));
 	http.createServer(
 		server
