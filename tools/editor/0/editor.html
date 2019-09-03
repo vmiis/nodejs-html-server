@@ -52,12 +52,6 @@
             //--------------------------------------------------------
             var ready1=function(){
                 set_editor();
-                var apppath=window.location.href.substring(0, window.location.href.lastIndexOf('/')).split('\/?')[0];
-		        var txt=localStorage.getItem(apppath+"_module_test_"+"_txt");
-
-                if(txt!=null){
-                    editor.setValue(txt);
-                }
             }
             //--------------------------------------------------------
             ready1();
@@ -79,7 +73,7 @@
             $('#save__ID').on('click',function(){
                 var endpoint=window.location.protocol+"//"+window.location.hostname+":"+window.location.port;
                 var full_path=$('#path__ID').val();
-                var last_path=full_path.replace(endpoint+"/",'').replace(endpoint+"\\",'').replace('sites/','').replace('sites\\','');
+                var last_path=full_path.replace(endpoint+"/",'').replace(endpoint+"\\",'');
 
                 var d={cmd:'save',"path":last_path,"content":editor.getValue(),password:$('#password__ID').val()}
                 var da=JSON.stringify(d);
@@ -97,7 +91,7 @@
             $('#load__ID').on('click',function(){
                 var path=$('#path__ID').val();
                 $.get(path+'?_='+new Date().getTime(),function(txt){  
-                    editor.setValue(txt);
+                    editor.setValue(txt,-1);
                 },'text');
 
             })
