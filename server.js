@@ -12,7 +12,7 @@ server.get('/*', function(req, res, next){
     next();
 });
 //---------------------------------------------------
-var content_path
+var content_path="";
 //---------------------------------------------------
 server.post('/', function (req, res) {
 	var r_data='';
@@ -49,7 +49,7 @@ server.post('/', function (req, res) {
 			var last=d.path.split('/').pop();
 			var folder=d.path.replace(last,'');
 			if(items.length>1){
-				if(folder.length>0 && (password[first+'/']==d.password || password[folder]==d.password)){
+				if(folder.length>0 && (password[first+'/']==d.password || password[folder]==d.password || ip=='::1' || ip=='::ffff:127.0.0.1')){
 					write();
 				}
 				else{
@@ -63,10 +63,8 @@ server.post('/', function (req, res) {
 		else if(d.cmd=='tree'){
 			var p1=content_path+"/"+d.path;
 			p1=p1.replace(/\//g,'\\').replace(/\\\\/g,'\\');
-			console.log(p1)
 			var tree = dirTree(p1);
 			remove_root_path(tree);
-			console.log(tree)
 			res.send(tree);
 		}
 	})
