@@ -24,7 +24,6 @@
             var module_name="";
             //--------------------------------------------------------
             $('#D__ID').on('load',function(){
-                //$('#path__ID').val("labs\\002");
                 var aa=window.location.href.split('?path=');
                 if(aa.length=2){
                     $('#path__ID').val(aa[1]);
@@ -70,7 +69,11 @@
                     if(tree.children[i].type=="directory"){
                         txt+=get_tree(I+1,tree.children[i])
                     }
-                    else txt+=get_space(I+1)+"<a href="+endpoint+"/"+tree.children[i].path.replace(/\\/g,'\/')+">"+tree.children[i].name+"</a>"+"<br>";
+                }
+                for(i in tree.children){
+                    if(tree.children[i].type=="file"){
+                        txt+=get_space(I+1)+"<a href="+endpoint+"/"+tree.children[i].path.replace(/\\/g,'\/')+">"+tree.children[i].name+"</a>"+"<br>";
+                    }
                 }
                 return txt;
             }
