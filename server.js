@@ -37,9 +37,12 @@ server.post('/', function (req, res) {
 			if(t==null) return;
 			t.path=t.path.replace(content_path,'')
 			for(i in t.children){
-				t.children[i].path=t.children[i].path.replace(content_path+"\\",'')
-				if(t.children[i].type=="directory"){
-					remove_root_path(t.children[i]);
+				if(t.children[i].path=='.git') delete t.children[i].path;
+				else{
+					t.children[i].path=t.children[i].path.replace(content_path+"\\",'')
+					if(t.children[i].type=="directory"){
+						remove_root_path(t.children[i]);
+					}
 				}
 			}
 		}

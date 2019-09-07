@@ -62,7 +62,8 @@
             }
             //--------------------------------------------------------
             var get_tree=function(I,tree){
-                var endpoint=window.location.protocol+"//"+window.location.hostname+":"+window.location.port;
+                var endpoint=window.location.protocol+"//"+window.location.hostname;
+                if(window.location.port!="") endpoint+=":"+window.location.port;
                 var txt="";
                 txt+=get_space(I)+tree.name+"<br>";
                 for(i in tree.children){
@@ -90,7 +91,8 @@
             }
             //--------------------------------------------------------
             $('#load__ID').on('click',function(){
-                var endpoint=window.location.protocol+"//"+window.location.hostname+":"+window.location.port;
+                var endpoint=window.location.protocol+"//"+window.location.hostname;
+                if(window.location.port!="") endpoint+=":"+window.location.port;
                 var path=$('#path__ID').val();
                 if(path==""){
                     $vm.alert("No file path.");
